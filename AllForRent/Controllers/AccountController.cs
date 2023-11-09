@@ -11,6 +11,10 @@ namespace AllForRent.Controllers
         {
             _productCardRepository = productCardRepository;
         }
+        public IActionResult Index()
+        {
+            return View();
+        }
         public IActionResult Login()
         {
             return View();
@@ -28,6 +32,17 @@ namespace AllForRent.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(ProductCard productCard)
+        {
+            if (!ModelState.IsValid) 
+            {
+                return View(productCard);
+            }
+            _productCardRepository.Add(productCard);
+            return RedirectToAction("Index");
         }
     }
 }

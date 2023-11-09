@@ -7,6 +7,10 @@ namespace AllForRent.Interfaces
     {
         Task<IEnumerable<ProductCard>> GetAll();
 		Task<ProductCard?> GetByIdAsync(int id);
+        bool Add(ProductCard productCard);
+        bool Update(ProductCard productCard);
+        bool Delete(ProductCard productCard);
+        bool Save();
 
-	}
+    }
 }

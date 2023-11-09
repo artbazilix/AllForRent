@@ -1,21 +1,37 @@
-﻿@*
+﻿@model ProductCard
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
 }
-<form>
+<form method="post" asp-action="Create">
     <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+        <label asp-for="Name" class="form-label">Название объявления</label>
+        <input asp-for="Name" class="form-control" placeholder="Заголовок для объявления">
+        <span asp-validation-for="Name" class="text-danger"></span>
+        <div id="emailHelp" class="form-text">Название должно содержать не более 60-ти символов</div>
     </div>
     <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input type="password" class="form-control" id="exampleInputPassword1">
+        <label asp-for="Description" class="form-label">Описание</label>
+        <input asp-for="Description" class="form-control" placeholder="Введите текст">
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
-    <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="exampleCheck1">
-        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+    <div class="mb-3">
+        <label asp-for="ProductPrice" class="form-label">Цена</label>
+        <input asp-for="ProductPrice" class="form-control" placeholder="Цена в рублях">
+        <span asp-validation-for="ProductPrice" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div class="mb-3">
+        <label asp-for="Seller" class="form-label">Продавец</label>
+        <input asp-for="Seller" class="form-control" placeholder="Будет указан автоматически при логине">
+        <span asp-validation-for="Seller" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Image" class="form-label">Добавьте изображение</label>
+        <input asp-for="Image" class="form-control" id="inputGroupFile01">
+        <span asp-validation-for="Image" class="text-danger"></span>
+    </div>
+
+
+    <button type="submit" class="btn btn-primary">Создать</button>
 </form>

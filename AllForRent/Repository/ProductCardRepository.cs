@@ -21,5 +21,26 @@ namespace AllForRent.Repository
 		{
 			return await _context.ProductCards.FirstOrDefaultAsync(x => x.Id == id);
 		}
-	}
+
+        public bool Add(ProductCard productCard)
+        {
+            _context.Add(productCard);
+            return Save();
+        }
+        public bool Delete(ProductCard productCard)
+        {
+            _context.Remove(productCard);
+            return Save();
+        }
+        public bool Update(ProductCard productCard)
+        {
+            _context.Update(productCard);
+            return Save();
+        }
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0;
+        }
+    }
 }
