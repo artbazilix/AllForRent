@@ -4,7 +4,7 @@
 
 namespace AllForRent.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class New1311 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,7 +45,8 @@ namespace AllForRent.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Seller = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProductPrice = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ProductPrice = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
