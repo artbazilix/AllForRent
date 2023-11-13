@@ -9,23 +9,28 @@ namespace AllForRent.Controllers
     {
         private readonly IProductCardRepository _productCardRepository;
         private readonly IPhotoService _photoService;
+
         public AccountController(IProductCardRepository productCardRepository, IPhotoService photoService)
         {
             _productCardRepository = productCardRepository;
             _photoService = photoService;
         }
+
         public IActionResult Index()
         {
             return View();
         }
+
         public IActionResult Login()
         {
             return View();
         }
+
         public IActionResult Register()
         {
             return View();
         }
+
         public async Task<IActionResult> Offers()
         {
             IEnumerable<ProductCard> productCards = await _productCardRepository.GetAll();
@@ -48,8 +53,8 @@ namespace AllForRent.Controllers
                 {
                     Name = productCardVM.Name,
                     Description = productCardVM.Description,
-                    Seller = productCardVM.Seller,
-                    ProductPrice = productCardVM.ProductPrice,
+                    //Seller = productCardVM.Seller,
+                    Price = productCardVM.Price,
                     Image = result.Url.ToString()
                 };
                 _productCardRepository.Add(productCard);
@@ -61,5 +66,64 @@ namespace AllForRent.Controllers
             }
             return View(productCardVM);
         }
+
+        public async Task<IActionResult> Edit(int id) 
+        {
+            var productCard = await _productCardRepository.GetByIdAsync(id);
+            if (productCard == null) return View("Error");
+            var productCardVM = new EditProductCardViewModel
+            {
+                Name = productCard.Name,
+                Description = productCard.Description,
+                //Seller = productCard.Seller,
+                Price = productCard.Price,
+                URL = productCard.Image
+            };
+            return View(productCardVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, EditProductCardViewModel productCardVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Ошибка редактирования");
+                return View("Error");
+            }
+
+            var sellerCard = await _productCardRepository.GetByIdAsyncNoTracking(id);
+
+            if (sellerCard != null)
+            {
+                if (productCardVM.Image != null)
+                {
+                    try
+                    {
+                        await _photoService.DeletePhotoAsync(sellerCard.Image);
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Не удалось удалить фотографию");
+                        return View("Error");
+                    }
+
+                    var photoResult = await _photoService.AddPhotoAsync(productCardVM.Image);
+                    sellerCard.Image = photoResult.Url.ToString();
+                }
+
+                sellerCard.Name = productCardVM.Name;
+                sellerCard.Description = productCardVM.Description;
+                //sellerCard.Seller = productCardVM.Seller;
+                sellerCard.Price = productCardVM.Price;
+
+                _productCardRepository.Update(sellerCard);
+                return RedirectToAction("Offers");
+            }
+            else
+            {
+                return View(productCardVM);
+            }
+        }
+
     }
 }

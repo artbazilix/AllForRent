@@ -2,10 +2,20 @@
 {
     public enum RentTime
     {
+        OneDay,
+        TwoDays,
+        ThreeDays,
+        FourDays,
+        FiveDays,
+        SixDays,
+        SevenDays,
         OneWeek,
         TwoWeek,
         ThreeWeek,
         FourWeek,
-        OneMonth
+        OneMonth,
+        ThreeMonths,
+        SixMonths,
+        OneYear
     }
 }

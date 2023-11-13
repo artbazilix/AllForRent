@@ -22,6 +22,11 @@ namespace AllForRent.Repository
 			return await _context.ProductCards.FirstOrDefaultAsync(x => x.Id == id);
 		}
 
+        public async Task<ProductCard?> GetByIdAsyncNoTracking(int id)
+        {
+            return await _context.ProductCards.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public bool Add(ProductCard productCard)
         {
             _context.Add(productCard);

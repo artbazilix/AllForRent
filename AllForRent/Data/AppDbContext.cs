@@ -1,16 +1,16 @@
 ﻿using AllForRent.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AllForRent.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<AppUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             
         }
-        public DbSet<AppSeller> AppSellers { get; set; }
-        public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<ProductCard> ProductCards { get; set; }
+        public DbSet<Address> Addresses { get; set; }
     }
 }
