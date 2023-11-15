@@ -13,7 +13,7 @@ namespace AllForRent.Data
                 var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
 
                 //context.Database.EnsureDeleted();
-                //context.Database.EnsureCreated();
+                context.Database.EnsureCreated();
 
                 if (!context.ProductCards.Any())
                 {

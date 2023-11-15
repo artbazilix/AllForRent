@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AllForRent.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231113194304_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20231115190010_Update")]
+    partial class Update
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

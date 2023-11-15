@@ -17,7 +17,10 @@
                 <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                     <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная</a></li>
                     <li><a class="nav-link text-dark" asp-area="" asp-controller="Catalog" asp-action="Index">Каталог</a></li>
-                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Create">Добавить предложение</a></li>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <li><a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Список пользователей</a></li>
+                    }
                 </ul>
 
                 <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
@@ -27,15 +30,15 @@
                 @if (User.Identity.IsAuthenticated)
                 {
                     <div class="text-end">
-                        <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Users" asp-action="Logout">Выйти</a>
-                        <a type="button" class="btn btn-warning" asp-area="" asp-controller="Dashboard" asp-action="index">Дашборд?</a>
+                        <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a>
+                        <a type="button" class="btn btn-warning" asp-area="" asp-controller="Dashboard" asp-action="index">Личный кабинет</a>
                     </div>
                 }
                 else
                 {
                     <div class="text-end">
-                        <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Users" asp-action="Login">Войти</a>
-                        <a type="button" class="btn btn-warning" asp-area="" asp-controller="Users" asp-action="Registration">Зарегистрироваться</a>
+                        <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Account" asp-action="Login">Войти</a>
+                        <a type="button" class="btn btn-warning" asp-area="" asp-controller="Account" asp-action="Registration">Зарегистрироваться</a>
                     </div>
                 }
             </div>

@@ -20,7 +20,7 @@ namespace AllForRent.Repository
         public async Task<List<ProductCard>> GetAllUserProductCards()
 		{
 			var curUser = _httpContextAccessor.HttpContext?.User;
-            var userProductCards = await _context.ProductCards.Where(r => r.AppUser.Id == curUser.ToString()).ToListAsync();
+            var userProductCards = await _context.ProductCards.Where(r => r.AppUser.Id == curUser.GetUserId()).ToListAsync();
             return userProductCards.ToList();
         }
 

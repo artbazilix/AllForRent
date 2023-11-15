@@ -1,93 +1,141 @@
 ﻿using AllForRent.Data;
+using AllForRent.Interfaces;
 using AllForRent.Models;
 using AllForRent.ViewModels;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AllForRent.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
-        private readonly AppDbContext _context;
+        private readonly IUsersRepository _usersRepository;
+        private readonly IProductCardRepository _productCardRepository;
+        private readonly IPhotoService _photoService;
+        private readonly IHttpContextAccessor _contextAccessor;
 
-        public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, AppDbContext context)
+        public UsersController(IUsersRepository usersRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor)
         {
-            _context = context;
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _usersRepository = usersRepository;
+            _productCardRepository = productCardRepository;
+            _photoService = photoService;
+            _contextAccessor = contextAccessor;
         }
 
-        [HttpGet]
-        public IActionResult Login()
+        public async Task<IActionResult> Index()
         {
-            var response = new LoginViewModel();
-            return View(response);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel loginViewModel)
-        {
-            if (!ModelState.IsValid) return View(loginViewModel);
-            var user = await _userManager.FindByEmailAsync(loginViewModel.EmailAddress);
-
-            if (user != null) 
+            var users = await _usersRepository.GetAllUsers();
+            List<UserViewModel> result = new List<UserViewModel>();
+            foreach (var user in users)
             {
-                var passwordCheck = await _userManager.CheckPasswordAsync(user, loginViewModel.Password);
-                if(passwordCheck)
+                var userViewModel = new UserViewModel()
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user, loginViewModel.Password, false, false);
-                    if (result.Succeeded) 
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                TempData["Error"] = "Неверные данные, попробуйте еще раз";
-                return View(loginViewModel);
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    City = user.City
+                };
+                result.Add(userViewModel);
             }
-            TempData["Error"] = "Неверные данные, попробуйте еще раз";
-            return View(loginViewModel);
+            return View(result);
         }
 
-        [HttpGet]
-        public IActionResult Registration()
+        public async Task<IActionResult> Detail(string id)
         {
-            var response = new RegistrationViewModel();
-            return View(response);
+            var user = await _usersRepository.GetUserById(id);
+            var userDetailViewModel = new UserDetailViewModel()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                City = user.City
+            };
+            return View(userDetailViewModel);
+        }
+
+        public IActionResult Create()
+        {
+            var curUserId = _contextAccessor.HttpContext.User.GetUserId();
+            var createClubViewModel = new CreateProductCardViewModel { AppUserId = curUserId };
+            return View(createClubViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Registration(RegistrationViewModel registrationViewModel)
+        public async Task<IActionResult> Create(CreateProductCardViewModel productCardVM)
         {
-            if (!ModelState.IsValid) return View(registrationViewModel);
-
-            var user = await _userManager.FindByEmailAsync(registrationViewModel.EmailAddress);
-            if (user != null)
+            if (ModelState.IsValid)
             {
-                TempData["Error"] = "Этот email уже зарегистрирован";
-                return View(registrationViewModel);
+                var result = await _photoService.AddPhotoAsync(productCardVM.Image);
+
+                var productCard = new ProductCard
+                {
+                    Name = productCardVM.Name,
+                    Description = productCardVM.Description,
+                    Price = productCardVM.Price,
+                    Image = result.Url.ToString(),
+                    AppUserId = productCardVM.AppUserId,
+                };
+                _productCardRepository.Add(productCard);
+                return RedirectToAction("Detail");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Ошибка загрузки изображения");
+            }
+            return View(productCardVM);
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var productCard = await _productCardRepository.GetByIdAsync(id);
+            if (productCard == null) return View("Error");
+            var productCardVM = new EditProductCardViewModel
+            {
+                Name = productCard.Name,
+                Description = productCard.Description,
+                Price = productCard.Price,
+                URL = productCard.Image
+            };
+            return View(productCardVM);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, EditProductCardViewModel productCardVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Ошибка редактирования");
+                return View("Error");
             }
 
-            var newUser = new AppUser()
+            var sellerCard = await _productCardRepository.GetByIdAsyncNoTracking(id);
+
+            if (sellerCard != null)
             {
-                Email = registrationViewModel.EmailAddress,
-                UserName = registrationViewModel.EmailAddress
-            };
-            var newUserResponse = await _userManager.CreateAsync(newUser, registrationViewModel.Password);
+                if (productCardVM.Image != null)
+                {
+                    try
+                    {
+                        await _photoService.DeletePhotoAsync(sellerCard.Image);
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError("", "Не удалось удалить фотографию");
+                        return View("Error");
+                    }
 
-            if (newUserResponse.Succeeded) 
-                await _userManager.AddToRoleAsync(newUser, UserRoles.User);
+                    var photoResult = await _photoService.AddPhotoAsync(productCardVM.Image);
+                    sellerCard.Image = photoResult.Url.ToString();
+                }
 
-            return RedirectToAction("Index", "Home");
+                sellerCard.Name = productCardVM.Name;
+                sellerCard.Description = productCardVM.Description;
+                sellerCard.Price = productCardVM.Price;
+
+                _productCardRepository.Update(sellerCard);
+                return RedirectToAction("Detail");
+            }
+            else
+            {
+                return View(productCardVM);
+            }
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
-
     }
 }
