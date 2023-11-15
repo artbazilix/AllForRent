@@ -12,8 +12,8 @@ namespace AllForRent.Data
             {
                 var context = serviceScope.ServiceProvider.GetService<AppDbContext>();
 
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
+                //context.Database.EnsureDeleted();
+                //context.Database.EnsureCreated();
 
                 if (!context.ProductCards.Any())
                 {
@@ -81,7 +81,6 @@ namespace AllForRent.Data
         {
             using (var serviceScope = applicationBuilder.ApplicationServices.CreateScope())
             {
-                //Roles
                 var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
                 if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
@@ -89,7 +88,6 @@ namespace AllForRent.Data
                 if (!await roleManager.RoleExistsAsync(UserRoles.User))
                     await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
 
-                //Users
                 var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
                 string adminUserEmail = "artbazilix@gmail.com";
 

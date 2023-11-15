@@ -2,6 +2,7 @@
 using AllForRent.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using AllForRent.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace AllForRent.Controllers
 {
@@ -17,16 +18,6 @@ namespace AllForRent.Controllers
         }
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        public IActionResult Register()
         {
             return View();
         }
@@ -53,7 +44,6 @@ namespace AllForRent.Controllers
                 {
                     Name = productCardVM.Name,
                     Description = productCardVM.Description,
-                    //Seller = productCardVM.Seller,
                     Price = productCardVM.Price,
                     Image = result.Url.ToString()
                 };
@@ -75,7 +65,6 @@ namespace AllForRent.Controllers
             {
                 Name = productCard.Name,
                 Description = productCard.Description,
-                //Seller = productCard.Seller,
                 Price = productCard.Price,
                 URL = productCard.Image
             };
@@ -113,7 +102,6 @@ namespace AllForRent.Controllers
 
                 sellerCard.Name = productCardVM.Name;
                 sellerCard.Description = productCardVM.Description;
-                //sellerCard.Seller = productCardVM.Seller;
                 sellerCard.Price = productCardVM.Price;
 
                 _productCardRepository.Update(sellerCard);

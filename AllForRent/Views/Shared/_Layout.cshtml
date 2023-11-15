@@ -24,10 +24,20 @@
                     <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Поиск..." aria-label="Search">
                 </form>
 
-                <div class="text-end">
-                    <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Account" asp-action="Login">Войти</a>
-                    <a type="button" class="btn btn-warning" asp-area="" asp-controller="Account" asp-action="Register">Зарегистрироваться</a>
-                </div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="text-end">
+                        <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Users" asp-action="Logout">Выйти</a>
+                        <a type="button" class="btn btn-warning" asp-area="" asp-controller="Dashboard" asp-action="index">Дашборд?</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-end">
+                        <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Users" asp-action="Login">Войти</a>
+                        <a type="button" class="btn btn-warning" asp-area="" asp-controller="Users" asp-action="Registration">Зарегистрироваться</a>
+                    </div>
+                }
             </div>
         </div>
     </header>

@@ -20,7 +20,6 @@ namespace AllForRent.Models
         public int? AddressId { get; set; }
         public Address? Address { get; set; }
         public RentTime RentTime { get; set; }
-        //public string? Seller { get; set; }
-        //у прайса был стринг
+        
     }
 }
