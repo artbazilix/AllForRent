@@ -12,6 +12,5 @@ namespace AllForRent.Interfaces
         bool Update(ProductCard productCard);
         bool Delete(ProductCard productCard);
         bool Save();
-
     }
 }

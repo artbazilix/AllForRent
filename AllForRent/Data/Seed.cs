@@ -18,64 +18,65 @@ namespace AllForRent.Data
                 if (!context.ProductCards.Any())
                 {
                     context.ProductCards.AddRange(new List<ProductCard>()
+            {
+                new ProductCard()
+                {
+                    HeadTitle = "Название товара 1",
+                    Description = "Описание 1",
+                    Price = 111,
+                    Image = new ProductCardImages { First = "https://avatars.mds.yandex.net/i?id=3bdee6dc6fedd9cd37fa9713ef498025fdfe6696-9229664-images-thumbs&n=13" },
+                    RentTime = RentTime.OneDay,
+                    Address = new Address()
                     {
-                        new ProductCard()
-                        {
-                            Name = "Название товара 1",
-                            Description = "Описание 1",
-                            Price = 111,
-                            Image = "https://avatars.mds.yandex.net/i?id=3bdee6dc6fedd9cd37fa9713ef498025fdfe6696-9229664-images-thumbs&n=13",
-                            RentTime = RentTime.OneDay,
-                            Address = new Address()
-                            {
-                                City = "Charlotte",
-                                State = "NC"
-                            }
-                         },
-                        new ProductCard()
-                        {
-                            Name = "Название товара 2",
-                            Description = "Описание 2",
-                            Price = 222,
-                            Image = "https://avatars.mds.yandex.net/i?id=20c346d16c83817bdd1d9ad292813b7d1d6063a6-9848498-images-thumbs&n=13",
-                            RentTime = RentTime.OneWeek,
-                            Address = new Address()
-                            {
-                                City = "Lotte",
-                                State = "WS"
-                            }
-                         },
-                        new ProductCard()
-                        {
-                            Name = "Название товара 3",
-                            Description = "Описание 3",
-                            Price = 333,
-                            Image = "https://avatars.mds.yandex.net/i?id=fb47b1af14182670f4e52ed07407f99bb447b940-10448002-images-thumbs&n=13",
-                            RentTime = RentTime.OneMonth,
-                            Address = new Address()
-                            {
-                                City = "Gawe",
-                                State = "GW"
-                            }
-                         },
-                        new ProductCard()
-                        {
-                            Name = "Название товара 4",
-                            Description = "Описание 4",
-                            Price = 444,
-                            Image = "https://afftimes.com/wp-content/uploads/2021/02/arenda-akkauntov-fejsbuk-zarabotok.jpg",
-                            RentTime = RentTime.OneYear,
-                            Address = new Address()
-                            {
-                                City = "Смоленск",
-                                State = "Смоленская область "
-                            }
-                        }
-                    });
+                        City = "Charlotte",
+                        State = "NC"
+                    }
+                 },
+                new ProductCard()
+                {
+                    HeadTitle = "Название товара 2",
+                    Description = "Описание 2",
+                    Price = 222,
+                    Image = new ProductCardImages { First = "https://avatars.mds.yandex.net/i?id=20c346d16c83817bdd1d9ad292813b7d1d6063a6-9848498-images-thumbs&n=13" },
+                    RentTime = RentTime.OneWeek,
+                    Address = new Address()
+                    {
+                        City = "Lotte",
+                        State = "WS"
+                    }
+                 },
+                new ProductCard()
+                {
+                    HeadTitle = "Название товара 3",
+                    Description = "Описание 3",
+                    Price = 333,
+                    Image = new ProductCardImages { First = "https://avatars.mds.yandex.net/i?id=fb47b1af14182670f4e52ed07407f99bb447b940-10448002-images-thumbs&n=13" },
+                    RentTime = RentTime.OneMonth,
+                    Address = new Address()
+                    {
+                        City = "Gawe",
+                        State = "GW"
+                    }
+                 },
+                new ProductCard()
+                {
+                    HeadTitle = "Название товара 4",
+                    Description = "Описание 4",
+                    Price = 444,
+                    Image = new ProductCardImages { First = "https://afftimes.com/wp-content/uploads/2021/02/arenda-akkauntov-fejsbuk-zarabotok.jpg" },
+                    RentTime = RentTime.OneYear,
+                    Address = new Address()
+                    {
+                        City = "Смоленск",
+                        State = "Смоленская область "
+                    }
+                }
+            });
                     context.SaveChanges();
                 }
             }
         }
+
 
         public static async Task SeedUsersAndRolesAsync(IApplicationBuilder applicationBuilder)
         {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AllForRent.Migrations
 {
-    public partial class Update : Migration
+    public partial class Create : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -17,8 +17,7 @@ namespace AllForRent.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Street = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     City = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ZipCode = table.Column<int>(type: "int", nullable: true)
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -40,14 +39,29 @@ namespace AllForRent.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProductCardsImages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    First = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Second = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Third = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fourth = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Fifth = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProductCardsImages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ProfileImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    City = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AddressId = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -187,11 +201,11 @@ namespace AllForRent.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HeadTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ProductCardImagesId = table.Column<int>(type: "int", nullable: false),
+                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AddressId = table.Column<int>(type: "int", nullable: true),
                     RentTime = table.Column<int>(type: "int", nullable: false)
                 },
@@ -207,7 +221,14 @@ namespace AllForRent.Migrations
                         name: "FK_ProductCards_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProductCards_ProductCardsImages_ProductCardImagesId",
+                        column: x => x.ProductCardImagesId,
+                        principalTable: "ProductCardsImages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -263,6 +284,11 @@ namespace AllForRent.Migrations
                 name: "IX_ProductCards_AppUserId",
                 table: "ProductCards",
                 column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProductCards_ProductCardImagesId",
+                table: "ProductCards",
+                column: "ProductCardImagesId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -290,6 +316,9 @@ namespace AllForRent.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "ProductCardsImages");
 
             migrationBuilder.DropTable(
                 name: "Addresses");
