@@ -2,7 +2,7 @@
 
 namespace AllForRent.Interfaces
 {
-    public interface IUsersRepository
+    public interface IUserRepository
     {
         Task<IEnumerable<AppUser>> GetAllUsers();
         Task<AppUser> GetUserById(string id);

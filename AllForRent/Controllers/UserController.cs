@@ -6,16 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AllForRent.Controllers
 {
-    public class UsersController : Controller
+    public class UserController : Controller
     {
-        private readonly IUsersRepository _usersRepository;
+        private readonly IUserRepository _usersRepository;
         private readonly IProductCardRepository _productCardRepository;
         private readonly IPhotoService _photoService;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public UsersController(IUsersRepository usersRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor)
+        public UserController(IUserRepository userRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor)
         {
-            _usersRepository = usersRepository;
+            _usersRepository = userRepository;
             _productCardRepository = productCardRepository;
             _photoService = photoService;
             _contextAccessor = contextAccessor;
@@ -41,6 +41,11 @@ namespace AllForRent.Controllers
         public async Task<IActionResult> Detail(string id)
         {
             var user = await _usersRepository.GetUserById(id);
+            if (user == null)
+            {
+                // Обработка ошибки: пользователь не найден
+                return NotFound();
+            }
             var userDetailViewModel = new UserDetailViewModel()
             {
                 Id = user.Id,
@@ -49,6 +54,7 @@ namespace AllForRent.Controllers
             };
             return View(userDetailViewModel);
         }
+
 
         public IActionResult Create()
         {
@@ -64,16 +70,23 @@ namespace AllForRent.Controllers
             {
                 var result = await _photoService.AddPhotoAsync(productCardVM.Image);
 
-                var productCard = new ProductCard
+                if (result != null && !string.IsNullOrEmpty(productCardVM.AppUserId))
                 {
-                    Name = productCardVM.Name,
-                    Description = productCardVM.Description,
-                    Price = productCardVM.Price,
-                    Image = result.Url.ToString(),
-                    AppUserId = productCardVM.AppUserId,
-                };
-                _productCardRepository.Add(productCard);
-                return RedirectToAction("Detail");
+                    var productCard = new ProductCard
+                    {
+                        Name = productCardVM.Name,
+                        Description = productCardVM.Description,
+                        Price = productCardVM.Price,
+                        Image = result.Url.ToString(),
+                        AppUserId = productCardVM.AppUserId,
+                    };
+                    _productCardRepository.Add(productCard);
+                    return RedirectToAction("Index", "Dashboard");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Ошибка: некоторые данные отсутствуют");
+                }
             }
             else
             {
@@ -81,6 +94,7 @@ namespace AllForRent.Controllers
             }
             return View(productCardVM);
         }
+
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -130,7 +144,7 @@ namespace AllForRent.Controllers
                 sellerCard.Price = productCardVM.Price;
 
                 _productCardRepository.Update(sellerCard);
-                return RedirectToAction("Detail");
+                return RedirectToAction("Index", "Dashboard");
             }
             else
             {

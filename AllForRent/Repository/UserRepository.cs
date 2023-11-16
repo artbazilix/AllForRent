@@ -2,15 +2,18 @@
 using AllForRent.Interfaces;
 using AllForRent.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AllForRent.Repository
 {
-    public class UsersRepository : IUsersRepository
+    public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
-        public UsersRepository(AppDbContext context)
+        private readonly ILogger _logger;
+        public UserRepository(AppDbContext context, ILogger<UserRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
         public bool Add(AppUser user)
         {

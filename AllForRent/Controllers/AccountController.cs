@@ -77,10 +77,22 @@ namespace AllForRent.Controllers
             var newUserResponse = await _userManager.CreateAsync(newUser, registrationViewModel.Password);
 
             if (newUserResponse.Succeeded)
+            {
                 await _userManager.AddToRoleAsync(newUser, UserRoles.User);
+                await _signInManager.SignInAsync(newUser, isPersistent: false);
+            }
+            else
+            {
+                foreach (var error in newUserResponse.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(registrationViewModel);
+            }
 
             return RedirectToAction("Index", "Home");
         }
+
 
         [HttpGet]
         public async Task<IActionResult> Logout()
