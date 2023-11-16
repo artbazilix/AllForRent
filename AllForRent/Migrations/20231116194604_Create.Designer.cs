@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AllForRent.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231115190010_Update")]
-    partial class Update
+    [Migration("20231116194604_Create")]
+    partial class Create
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,9 +43,6 @@ namespace AllForRent.Migrations
                     b.Property<string>("Street")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ZipCode")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("Addresses");
@@ -61,9 +58,6 @@ namespace AllForRent.Migrations
 
                     b.Property<int?>("AddressId")
                         .HasColumnType("int");
-
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -111,9 +105,6 @@ namespace AllForRent.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("State")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -148,19 +139,22 @@ namespace AllForRent.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AppUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("HeadTitle")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("ProductCardImagesId")
+                        .HasColumnType("int");
 
                     b.Property<int>("RentTime")
                         .HasColumnType("int");
@@ -171,7 +165,38 @@ namespace AllForRent.Migrations
 
                     b.HasIndex("AppUserId");
 
+                    b.HasIndex("ProductCardImagesId");
+
                     b.ToTable("ProductCards");
+                });
+
+            modelBuilder.Entity("AllForRent.Models.ProductCardImages", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Fifth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("First")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Fourth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Second")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Third")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ProductCardsImages");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -324,11 +349,21 @@ namespace AllForRent.Migrations
 
                     b.HasOne("AllForRent.Models.AppUser", "AppUser")
                         .WithMany()
-                        .HasForeignKey("AppUserId");
+                        .HasForeignKey("AppUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AllForRent.Models.ProductCardImages", "Image")
+                        .WithMany()
+                        .HasForeignKey("ProductCardImagesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Address");
 
                     b.Navigation("AppUser");
+
+                    b.Navigation("Image");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

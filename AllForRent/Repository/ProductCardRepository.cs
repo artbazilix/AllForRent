@@ -15,17 +15,17 @@ namespace AllForRent.Repository
 
         public async Task<IEnumerable<ProductCard>> GetAll()
         {
-            return await _context.ProductCards.ToListAsync();
-        }
+			return await _context.ProductCards.Include(p => p.Image).ToListAsync();
+		}
 
 		public async Task<ProductCard?> GetByIdAsync(int id)
 		{
-			return await _context.ProductCards.FirstOrDefaultAsync(x => x.Id == id);
+			return await _context.ProductCards.Include(p => p.Image).FirstOrDefaultAsync(x => x.Id == id);
 		}
 
         public async Task<ProductCard?> GetByIdAsyncNoTracking(int id)
         {
-            return await _context.ProductCards.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.ProductCards.Include(p => p.Image).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public bool Add(ProductCard productCard)

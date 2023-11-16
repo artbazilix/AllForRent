@@ -27,7 +27,7 @@ namespace AllForRent.Repository
 
         public async Task<IEnumerable<AppUser>> GetAllUsers()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users.Include(a => a.Address).ToListAsync();
         }
 
         public async Task<AppUser> GetUserById(string id)
