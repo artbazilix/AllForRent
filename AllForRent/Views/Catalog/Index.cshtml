@@ -20,8 +20,8 @@
                                         <a asp-controller="catalog" asp-action="detail" asp-route-id="@card.Id" type="button" class="btn btn-sm btn-outline-secondary">Подробнее</a>
                                         @if (User.Identity.IsAuthenticated && User.IsInRole("admin"))
                                         {
-                                            <a asp-controller="account" asp-action="edit" asp-route-id="@card.Id" type="button" class="btn btn-sm btn-outline-secondary">Редактировать</a>
-                                            <a asp-controller="account" asp-action="delete" asp-route-id="@card.Id" type="button" class="btn btn-sm btn-outline-secondary">Удалить</a>
+                                            <a asp-controller="user" asp-action="edit" asp-route-id="@card.Id" type="button" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                                            <a asp-controller="user" asp-action="delete" asp-route-id="@card.Id" type="button" class="btn btn-sm btn-outline-secondary">Удалить</a>
                                         }
                                     </div>
                                     <div class="mt-2 w-100 text-end">

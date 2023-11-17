@@ -1,15 +1,14 @@
 ﻿@using AllForRent.ViewModels;
 @model EditProductCardViewModel
-@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
 }
+
 <form method="post" asp-action="Edit" enctype="multipart/form-data">
     <div class="mb-3">
-        <label asp-for="Name" class="form-label">Название объявления</label>
-        <input asp-for="Name" class="form-control" placeholder="Заголовок для объявления">
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <label asp-for="HeadTitle" class="form-label">Название объявления</label>
+        <input asp-for="HeadTitle" class="form-control" placeholder="Заголовок для объявления">
+        <span asp-validation-for="HeadTitle" class="text-danger"></span>
         <div id="emailHelp" class="form-text">Название должно содержать не более 60-ти символов</div>
     </div>
     <div class="mb-3">

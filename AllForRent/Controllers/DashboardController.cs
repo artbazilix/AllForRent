@@ -43,9 +43,9 @@ namespace AllForRent.Controllers
                 City = user.Address?.City,
                 State = user.Address?.State,
                 Street = user.Address?.Street
+                
             };
             return View(editUserViewModel);
         }
-
     }
 }

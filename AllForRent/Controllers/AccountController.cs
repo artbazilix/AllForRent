@@ -58,47 +58,67 @@ namespace AllForRent.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Registration(RegistrationViewModel registrationViewModel)
-        {
-            if (!ModelState.IsValid) return View(registrationViewModel);
+		public async Task<IActionResult> Registration(RegistrationViewModel registrationViewModel)
+		{
+			if (!ModelState.IsValid) return View(registrationViewModel);
 
-            var user = await _userManager.FindByEmailAsync(registrationViewModel.EmailAddress);
-            if (user != null)
-            {
-                TempData["Error"] = "Этот email уже зарегистрирован";
-                return View(registrationViewModel);
-            }
+			var user = await FindUserByEmail(registrationViewModel.EmailAddress);
+			if (user != null)
+			{
+				TempData["Error"] = "Этот email уже зарегистрирован";
+				return View(registrationViewModel);
+			}
 
-            var newUser = new AppUser()
-            {
-                Email = registrationViewModel.EmailAddress,
-                UserName = registrationViewModel.EmailAddress
-            };
-            var newUserResponse = await _userManager.CreateAsync(newUser, registrationViewModel.Password);
+			var newUser = CreateNewUser(registrationViewModel);
+			var newUserResponse = await _userManager.CreateAsync(newUser, registrationViewModel.Password);
 
-            if (newUserResponse.Succeeded)
-            {
-                await _userManager.AddToRoleAsync(newUser, UserRoles.User);
-                await _signInManager.SignInAsync(newUser, isPersistent: false);
-            }
-            else
-            {
-                foreach (var error in newUserResponse.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-                return View(registrationViewModel);
-            }
+			if (newUserResponse.Succeeded)
+			{
+				await AddUserToRoleAndSignIn(newUser);
+			}
+			else
+			{
+				AddErrorsToModelState(newUserResponse);
+				return View(registrationViewModel);
+			}
 
-            return RedirectToAction("Index", "Home");
-        }
+			return RedirectToAction("Index", "Home");
+		}
 
+		[HttpGet]
+		public async Task<IActionResult> Logout()
+		{
+			await _signInManager.SignOutAsync();
+			return RedirectToAction("Index", "Home");
+		}
 
-        [HttpGet]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
-    }
+		private async Task<AppUser> FindUserByEmail(string email)
+		{
+			return await _userManager.FindByEmailAsync(email);
+		}
+
+		private AppUser CreateNewUser(RegistrationViewModel registrationViewModel)
+		{
+			return new AppUser()
+			{
+				Email = registrationViewModel.EmailAddress,
+				UserName = registrationViewModel.EmailAddress,
+				CreatedDate = DateTime.Now
+			};
+		}
+
+		private async Task AddUserToRoleAndSignIn(AppUser user)
+		{
+			await _userManager.AddToRoleAsync(user, UserRoles.User);
+			await _signInManager.SignInAsync(user, isPersistent: false);
+		}
+
+		private void AddErrorsToModelState(IdentityResult result)
+		{
+			foreach (var error in result.Errors)
+			{
+				ModelState.AddModelError(string.Empty, error.Description);
+			}
+		}
+	}
 }
