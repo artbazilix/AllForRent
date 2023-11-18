@@ -1,5 +1,7 @@
 ﻿using AllForRent.Interfaces;
+using AllForRent.Models;
 using AllForRent.ViewModels;
+using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +21,28 @@ namespace AllForRent.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
+        private void MapUserEdit(AppUser user, EditUserDashboardViewModel editVM, ImageUploadResult photoResult)
+        {
+            user.Id = editVM.Id;
+            user.FullName = editVM.FullName;
+            user.PhoneNumber = editVM.PhoneNumber;
+
+            if (photoResult != null && photoResult.Url != null)
+            {
+                user.ProfileImageUrl = photoResult.Url.ToString();
+            }
+
+            if (user.Address == null)
+            {
+                user.Address = new Address();
+            }
+
+            user.Address.Street = editVM.Street;
+            user.Address.City = editVM.City;
+            user.Address.State = editVM.State;
+        }
+
+
         public async Task<IActionResult> Index()
         {
             var userProductCards = await _dashboardRespository.GetAllUserProductCards();
@@ -34,18 +58,62 @@ namespace AllForRent.Controllers
             var curUserId = _httpContextAccessor.HttpContext.User.GetUserId();
             var user = await _dashboardRespository.GetUserById(curUserId);
             if (user == null) return View("Error");
+
             var editUserViewModel = new EditUserDashboardViewModel()
             {
                 Id = curUserId,
                 FullName = user.FullName,
-                ProfileImage = user.ProfileImageUrl,
+                ProfileImageUrl = user.ProfileImageUrl,
                 PhoneNumber = user.PhoneNumber,
-                City = user.Address?.City,
-                State = user.Address?.State,
-                Street = user.Address?.Street
             };
+
+            if (user.Address != null)
+            {
+                editUserViewModel.City = user.Address.City;
+                editUserViewModel.State = user.Address.State;
+                editUserViewModel.Street = user.Address.Street;
+            }
+
             return View(editUserViewModel);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> EditUserProfile(EditUserDashboardViewModel editVM)
+        {
+            if(!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Ошибка редактирования");
+                return View("EditUserProfile");
+            }
+
+            var user = await _dashboardRespository.GetByIdNoTracking(editVM.Id);
+
+            if (user.ProfileImageUrl == "" || user.ProfileImageUrl == null) 
+            {
+                var photoResult = await _photoService.AddPhotoAsync(editVM.Image);
+                
+                MapUserEdit(user, editVM, photoResult);
+
+                _dashboardRespository.Update(user);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                try 
+                {
+                    await _photoService.DeletePhotoAsync(user.ProfileImageUrl);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", "Не удалось загрузить изображение");
+                    return View(editVM);
+                }
+                var photoResult = await _photoService.AddPhotoAsync(editVM.Image);
+                MapUserEdit(user, editVM, photoResult);
+                _dashboardRespository.Update(user);
+                return RedirectToAction("Index");
+            }
+
+        }
     }
 }

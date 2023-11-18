@@ -5,27 +5,27 @@
 }
 
 <form method="post" asp-action="Create" enctype="multipart/form-data">
-    <input type="hidden" id="AppUserId" name="AppUserId" asp-for="AppUserId" />
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label">Название объявления</label>
-        <input asp-for="Name" class="form-control" placeholder="Заголовок для объявления">
-        <span asp-validation-for="Name" class="text-danger"></span>
-        <div id="emailHelp" class="form-text">Название должно содержать не более 60-ти символов</div>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Description" class="form-label">Описание</label>
-        <input asp-for="Description" class="form-control" placeholder="Введите текст">
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Price" class="form-label">Цена</label>
-        <input asp-for="Price" class="form-control" placeholder="Цена в рублях">
-        <span asp-validation-for="Price" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Images" class="form-label">Добавте до 5-ти изображения</label>
-        <input asp-for="Images" class="form-control" type="file" multiple>
-        <span asp-validation-for="Images" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Сохранить</button>
+	<input type="hidden" id="AppUserId" name="AppUserId" asp-for="AppUserId" />
+	<div class="mb-3">
+		<label asp-for="Name" class="form-label">Название объявления</label>
+		<input asp-for="Name" class="form-control" placeholder="Заголовок для объявления">
+		<span asp-validation-for="Name" class="text-danger"></span>
+		<div id="emailHelp" class="form-text">Название должно содержать не более 60-ти символов</div>
+	</div>
+	<div class="mb-3">
+		<label asp-for="Description" class="form-label">Описание</label>
+		<input asp-for="Description" class="form-control" placeholder="Введите текст">
+		<span asp-validation-for="Description" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="Price" class="form-label">Цена</label>
+		<input asp-for="Price" class="form-control" placeholder="Цена в рублях">
+		<span asp-validation-for="Price" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="Images" class="form-label">Добавте до 5-ти изображения</label>
+		<input asp-for="Images" class="form-control" type="file" multiple>
+		<span asp-validation-for="Images" class="text-danger"></span>
+	</div>
+	<button type="submit" class="btn btn-primary">Сохранить</button>
 </form>

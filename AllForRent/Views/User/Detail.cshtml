@@ -10,10 +10,13 @@
             <div class="col-12 col-md-8">
                 <div class="media">
                     <div class="media-body">
+                        <img alt="Image profile avatar" src="@Model.ProfileImageUrl" class="avatar">
                         <div class="mb-3">
                             <h1 class="h2 mb-2">@Model.UserName</h1>
                         </div>
+                        <p class="text-muted">Улица: @Model.Street</p>
                         <p class="text-muted">Город: @Model.City</p>
+                        <p class="text-muted">Область: @Model.State</p>
                         <p>
                             Bit of a go-getter me, creating lovely things that help others. You'll most often find me out back in the hammock, listening to tunes and bending pixels to my will.
                         </p>
