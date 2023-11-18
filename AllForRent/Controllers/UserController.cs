@@ -48,8 +48,11 @@ namespace AllForRent.Controllers
 			{
 				Id = user.Id,
 				UserName = user.UserName,
-				City = user.Address?.City
-			};
+				Street = user.Address?.Street,
+				City = user.Address?.City,
+				State = user.Address?.State,
+                ProfileImageUrl = user.ProfileImageUrl
+            };
 			return View(userDetailViewModel);
 		}
 

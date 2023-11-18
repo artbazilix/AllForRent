@@ -26,7 +26,7 @@ namespace AllForRent.Repository
 
         public async Task<AppUser> GetUserById(string id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users.Include(u => u.Address).FirstOrDefaultAsync(u => u.Id == id);
         }
 
         public async Task<AppUser> GetByIdNoTracking(string id)
