@@ -51,5 +51,15 @@ namespace AllForRent.Repository
             var saved = _context.SaveChanges();
             return saved > 0;
         }
+
+        public async Task<IEnumerable<ProductCard>> GetProductCardByCity(string city)
+        {
+            return await _context.ProductCards
+                .Include(c => c.Address)
+				.Include(c => c.Image)
+				.Where(c => c.Address.City.Contains(city))
+                .Distinct()
+                .ToListAsync();
+        }
     }
 }

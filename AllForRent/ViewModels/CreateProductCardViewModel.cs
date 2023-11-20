@@ -1,4 +1,6 @@
-﻿namespace AllForRent.ViewModels
+﻿using AllForRent.Models;
+
+namespace AllForRent.ViewModels
 {
     public class CreateProductCardViewModel
     {
@@ -8,5 +10,6 @@
         public string Description { get; set; }
         public decimal Price { get; set; }
         public List<IFormFile> Images { get; set; }
+        public Address Address { get; set; }
     }
 }

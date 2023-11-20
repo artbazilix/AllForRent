@@ -1,24 +1,60 @@
-﻿using AllForRent.Models;
+﻿using AllForRent.Helpers;
+using AllForRent.Interfaces;
+using AllForRent.Models;
+using AllForRent.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
+using System.Globalization;
+using System.Linq.Expressions;
+using System.Net;
+using System.Net.NetworkInformation;
 
 namespace AllForRent.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IProductCardRepository _productCardRepository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IProductCardRepository productCardRepository)
         {
             _logger = logger;
+            _productCardRepository = productCardRepository;
         }
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+		public async Task<IActionResult> Index()
+		{
+			var ipInfo = new IPInfo();
+			var homeViewModel = new HomeViewModel();
+			try
+			{
+				string url = "https://ipinfo.io?token=f1b01083e080f1";
+				var info = new WebClient().DownloadString(url);
+				ipInfo = JsonConvert.DeserializeObject<IPInfo>(info);
+				RegionInfo myRI1 = new RegionInfo(ipInfo.Country);
+				ipInfo.Country = myRI1.EnglishName;
+				homeViewModel.City = ipInfo.City;
+				homeViewModel.State = ipInfo.Region;
+				if (homeViewModel.City != null)
+				{
+					homeViewModel.ProductCards = await _productCardRepository.GetProductCardByCity(homeViewModel.City);
+				}
+				else
+				{
+					homeViewModel.ProductCards = null;
+				}
+				return View(homeViewModel);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "An error occurred while loading the product cards.");
+				homeViewModel.ProductCards = null;
+			}
+			return View(homeViewModel);
+		}
 
-        public IActionResult Privacy()
+		public IActionResult Privacy()
         {
             return View();
         }

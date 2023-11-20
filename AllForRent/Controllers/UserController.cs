@@ -1,7 +1,9 @@
-﻿using AllForRent.Interfaces;
+﻿using AllForRent.Data;
+using AllForRent.Interfaces;
 using AllForRent.Models;
 using AllForRent.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllForRent.Controllers
 {
@@ -11,13 +13,15 @@ namespace AllForRent.Controllers
 		private readonly IProductCardRepository _productCardRepository;
 		private readonly IPhotoService _photoService;
 		private readonly IHttpContextAccessor _contextAccessor;
+		private readonly AppDbContext _context;
 
-		public UserController(IUserRepository userRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor)
+		public UserController(IUserRepository userRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor, AppDbContext context)
 		{
 			_usersRepository = userRepository;
 			_productCardRepository = productCardRepository;
 			_photoService = photoService;
 			_contextAccessor = contextAccessor;
+			_context = context;
 		}
 
 		public async Task<IActionResult> Index()
@@ -146,14 +150,19 @@ namespace AllForRent.Controllers
 
 		private ProductCard CreateProductCard(CreateProductCardViewModel productCardVM, ProductCardImages productCardImages)
 		{
-			return new ProductCard
+            var address = _context.Addresses.Add(productCardVM.Address);
+            _context.SaveChanges();
+
+            return new ProductCard
 			{
 				HeadTitle = productCardVM.Name,
 				Description = productCardVM.Description,
 				Price = productCardVM.Price,
 				Image = productCardImages,
 				AppUserId = productCardVM.AppUserId,
-			};
+                AddressId = address.Entity.Id
+
+            };
 		}
 
 		private async Task<ProductCard> GetProductCard(int id)
