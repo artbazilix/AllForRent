@@ -112,34 +112,50 @@ namespace AllForRent.Controllers
 
 
         [HttpPost]
-		public async Task<IActionResult> Edit(int id, EditProductCardViewModel productCardVM)
-		{
-			if (!ModelState.IsValid)
-			{
-				ModelState.AddModelError("", "Ошибка редактирования");
-				return View("Error");
-			}
+        public async Task<IActionResult> Edit(int id, EditProductCardViewModel productCardVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Ошибка редактирования");
+                return View("Error");
+            }
 
-			var sellerCard = await _productCardRepository.GetByIdAsyncNoTracking(id);
+            var sellerCard = await _productCardRepository.GetByIdAsync(id);
 
-			if (sellerCard != null)
-			{
-				await UpdateImages(sellerCard, productCardVM);
+            if (sellerCard != null)
+            {
+                await UpdateImages(sellerCard, productCardVM);
 
-				sellerCard.HeadTitle = productCardVM.HeadTitle;
-				sellerCard.Description = productCardVM.Description;
-				sellerCard.Price = productCardVM.Price;
+                sellerCard.HeadTitle = productCardVM.HeadTitle;
+                sellerCard.Description = productCardVM.Description;
+                sellerCard.Price = productCardVM.Price;
 
-				_productCardRepository.Update(sellerCard);
-				return RedirectToAction("Index", "Dashboard");
-			}
-			else
-			{
-				return View(productCardVM);
-			}
-		}
+                if (sellerCard.Image != null)
+                {
+                    // Обновление изображений
 
-		public async Task<IActionResult> Delete(int id)
+                    _context.Entry(sellerCard.Image).State = EntityState.Modified;
+                }
+
+                if (sellerCard.Address != null)
+                {
+                    sellerCard.Address.Street = productCardVM.Street;
+                    sellerCard.Address.City = productCardVM.City;
+                    sellerCard.Address.State = productCardVM.State;
+                    _context.Entry(sellerCard.Address).State = EntityState.Modified;
+                }
+
+                _context.Entry(sellerCard).State = EntityState.Modified;
+                _productCardRepository.Save();
+                return RedirectToAction("Index", "Dashboard");
+            }
+            else
+            {
+                return View(productCardVM);
+            }
+        }
+
+        public async Task<IActionResult> Delete(int id)
 		{
 			var productCardDetails = await _productCardRepository.GetByIdAsync(id);
 			if (productCardDetails == null) return View("Error");
@@ -225,21 +241,31 @@ namespace AllForRent.Controllers
 			};
 		}
 
-		private async Task UpdateImages(ProductCard sellerCard, EditProductCardViewModel productCardVM)
-		{
-			if (sellerCard.Image == null)
-			{
-				sellerCard.Image = new ProductCardImages();
-			}
+        private async Task UpdateImages(ProductCard sellerCard, EditProductCardViewModel productCardVM)
+        {
+            if (sellerCard.Image == null)
+            {
+                sellerCard.Image = new ProductCardImages();
+            }
 
-			if (productCardVM.Images != null && productCardVM.Images.Count > 0)
-			{
-				await DeleteExistingImages(sellerCard);
-				await AddNewImages(sellerCard, productCardVM);
-			}
-		}
+            if (productCardVM.Images != null && productCardVM.Images.Count > 0)
+            {
+                for (int i = 0; i < productCardVM.Images.Count; i++)
+                {
+                    var image = productCardVM.Images[i];
+                    if (image != null)
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await image.CopyToAsync(memoryStream);
+                            // Сохраните изображение в нужное место и обновите свойства изображения в sellerCard
+                        }
+                    }
+                }
+            }
+        }
 
-		private async Task DeleteExistingImages(ProductCard sellerCard)
+        private async Task DeleteExistingImages(ProductCard sellerCard)
 		{
 			try
 			{
