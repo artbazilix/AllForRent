@@ -23,11 +23,16 @@ namespace AllForRent.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var curUserId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var user = await _dashboardRespository.GetUserById(curUserId);
             var userProductCards = await _dashboardRespository.GetAllUserProductCards();
+
             var dashboardViewModel = new DashboardViewModel()
             {
-                ProductCards = userProductCards
+                ProductCards = userProductCards,
+                Balance = user.Balance
             };
+
             return View(dashboardViewModel);
         }
 
