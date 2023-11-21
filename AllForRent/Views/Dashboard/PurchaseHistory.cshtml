@@ -1,0 +1,24 @@
+﻿@using AllForRent.ViewModels
+@model IEnumerable<PurchaseHistoryViewModel>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Имя пользователя</th>
+            <th>Название товара</th>
+            <th>Цена товара</th>
+            <th>Время покупки</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var purchase in Model)
+        {
+            <tr>
+                <td>@purchase.UserName</td>
+                <td>@purchase.ProductName</td>
+                <td>@purchase.ProductPrice</td>
+                <td>@purchase.PurchaseTime</td>
+            </tr>
+        }
+    </tbody>
+</table>
