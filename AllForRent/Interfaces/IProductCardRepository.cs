@@ -12,5 +12,8 @@ namespace AllForRent.Interfaces
         bool Update(ProductCard productCard);
         bool Delete(ProductCard productCard);
         bool Save();
+        Task<IEnumerable<ProductCard>> GetProductCardByCity(string city);
+		Task<ProductCard?> GetByIdWithAddressAndImageAsync(int id);
+        IQueryable<ProductCard> SearchByName(string name);
     }
 }

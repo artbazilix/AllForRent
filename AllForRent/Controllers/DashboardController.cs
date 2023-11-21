@@ -21,28 +21,6 @@ namespace AllForRent.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private void MapUserEdit(AppUser user, EditUserDashboardViewModel editVM, ImageUploadResult photoResult)
-        {
-            user.Id = editVM.Id;
-            user.FullName = editVM.FullName;
-            user.PhoneNumber = editVM.PhoneNumber;
-
-            if (photoResult != null && photoResult.Url != null)
-            {
-                user.ProfileImageUrl = photoResult.Url.ToString();
-            }
-
-            if (user.Address == null)
-            {
-                user.Address = new Address();
-            }
-
-            user.Address.Street = editVM.Street;
-            user.Address.City = editVM.City;
-            user.Address.State = editVM.State;
-        }
-
-
         public async Task<IActionResult> Index()
         {
             var userProductCards = await _dashboardRespository.GetAllUserProductCards();
@@ -53,6 +31,7 @@ namespace AllForRent.Controllers
             return View(dashboardViewModel);
         }
 
+        [HttpGet]
         public async Task<IActionResult> EditUserProfile()
         {
             var curUserId = _httpContextAccessor.HttpContext.User.GetUserId();
@@ -114,6 +93,27 @@ namespace AllForRent.Controllers
                 return RedirectToAction("Index");
             }
 
+        }
+
+        private void MapUserEdit(AppUser user, EditUserDashboardViewModel editVM, ImageUploadResult photoResult)
+        {
+            user.Id = editVM.Id;
+            user.FullName = editVM.FullName;
+            user.PhoneNumber = editVM.PhoneNumber;
+
+            if (photoResult != null && photoResult.Url != null)
+            {
+                user.ProfileImageUrl = photoResult.Url.ToString();
+            }
+
+            if (user.Address == null)
+            {
+                user.Address = new Address();
+            }
+
+            user.Address.Street = editVM.Street;
+            user.Address.City = editVM.City;
+            user.Address.State = editVM.State;
         }
     }
 }

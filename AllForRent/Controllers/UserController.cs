@@ -1,7 +1,9 @@
-﻿using AllForRent.Interfaces;
+﻿using AllForRent.Data;
+using AllForRent.Interfaces;
 using AllForRent.Models;
 using AllForRent.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AllForRent.Controllers
 {
@@ -11,13 +13,15 @@ namespace AllForRent.Controllers
 		private readonly IProductCardRepository _productCardRepository;
 		private readonly IPhotoService _photoService;
 		private readonly IHttpContextAccessor _contextAccessor;
+		private readonly AppDbContext _context;
 
-		public UserController(IUserRepository userRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor)
+		public UserController(IUserRepository userRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor, AppDbContext context)
 		{
 			_usersRepository = userRepository;
 			_productCardRepository = productCardRepository;
 			_photoService = photoService;
 			_contextAccessor = contextAccessor;
+			_context = context;
 		}
 
 		public async Task<IActionResult> Index()
@@ -88,17 +92,26 @@ namespace AllForRent.Controllers
 			}
 		}
 
-		[HttpGet]
-		public async Task<IActionResult> Edit(int id)
-		{
-			var productCard = await GetProductCard(id);
-			if (productCard == null) return View("Error");
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var productCard = await GetProductCard(id);
+            if (productCard == null) return View("Error");
 
-			var productCardVM = CreateViewModel(productCard);
-			return View(productCardVM);
-		}
+            var productCardVM = CreateViewModel(productCard);
 
-		[HttpPost]
+            if (productCard.Address != null)
+            {
+                productCardVM.Street = productCard.Address.Street;
+                productCardVM.City = productCard.Address.City;
+                productCardVM.State = productCard.Address.State;
+            }
+
+            return View(productCardVM);
+        }
+
+
+        [HttpPost]
 		public async Task<IActionResult> Edit(int id, EditProductCardViewModel productCardVM)
 		{
 			if (!ModelState.IsValid)
@@ -126,7 +139,25 @@ namespace AllForRent.Controllers
 			}
 		}
 
-		private async Task<ProductCardImages> AddImages(CreateProductCardViewModel productCardVM)
+		public async Task<IActionResult> Delete(int id)
+		{
+			var productCardDetails = await _productCardRepository.GetByIdAsync(id);
+			if (productCardDetails == null) return View("Error");
+			return View(productCardDetails);
+		}
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteProductCard(int id)
+        {
+            var productCardDetails = await _productCardRepository.GetByIdAsync(id);
+            if (productCardDetails == null) return View("Error");
+
+            _productCardRepository.Delete(productCardDetails);
+
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        private async Task<ProductCardImages> AddImages(CreateProductCardViewModel productCardVM)
 		{
 			var productCardImages = new ProductCardImages();
 			var imageProperties = new List<string> { "First", "Second", "Third", "Fourth", "Fifth" };
@@ -146,24 +177,37 @@ namespace AllForRent.Controllers
 
 		private ProductCard CreateProductCard(CreateProductCardViewModel productCardVM, ProductCardImages productCardImages)
 		{
-			return new ProductCard
+            var address = _context.Addresses.Add(productCardVM.Address);
+            _context.SaveChanges();
+
+            return new ProductCard
 			{
 				HeadTitle = productCardVM.Name,
 				Description = productCardVM.Description,
 				Price = productCardVM.Price,
 				Image = productCardImages,
 				AppUserId = productCardVM.AppUserId,
-			};
+                AddressId = address.Entity.Id
+            };
 		}
 
-		private async Task<ProductCard> GetProductCard(int id)
-		{
-			var productCard = await _productCardRepository.GetByIdAsync(id);
-			if (productCard == null || productCard.Image == null) return null;
-			return productCard;
-		}
+        private async Task<ProductCard> GetProductCard(int id)
+        {
+            var productCard = await _productCardRepository.GetByIdAsync(id);
+            if (productCard == null || productCard.Image == null) return null;
 
-		private EditProductCardViewModel CreateViewModel(ProductCard productCard)
+            var address = productCard.Address;
+            if (address != null)
+            {
+                var street = address.Street;
+                var city = address.City;
+                var state = address.State;
+            }
+
+            return productCard;
+        }
+
+        private EditProductCardViewModel CreateViewModel(ProductCard productCard)
 		{
 			return new EditProductCardViewModel
 			{

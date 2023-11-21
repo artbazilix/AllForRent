@@ -23,6 +23,21 @@
 		<span asp-validation-for="Price" class="text-danger"></span>
 	</div>
 	<div class="mb-3">
+		<label asp-for="Address.Street" class="form-label">Улица</label>
+		<input asp-for="Address.Street" class="form-control" placeholder="Укажите улицу">
+		<span asp-validation-for="Address.Street" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="Address.City" class="form-label">Город</label>
+		<input asp-for="Address.City" class="form-control" placeholder="Укажите город">
+		<span asp-validation-for="Address.City" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
+		<label asp-for="Address.State" class="form-label">Область</label>
+		<input asp-for="Address.State" class="form-control" placeholder="Укажите область">
+		<span asp-validation-for="Address.State" class="text-danger"></span>
+	</div>
+	<div class="mb-3">
 		<label asp-for="Images" class="form-label">Добавте до 5-ти изображения</label>
 		<input asp-for="Images" class="form-control" type="file" multiple>
 		<span asp-validation-for="Images" class="text-danger"></span>

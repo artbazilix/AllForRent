@@ -19,10 +19,22 @@
 		<div class="col-md-4">
 			<h3 class="my-3">Описание</h3>
 			<p>@Model.Description</p>
-			<h3 class="my-3">Детали</h3>
-			<ul>
-				<li>Цена: @Model.Price ₽</li>
-			</ul>
+			<div>
+				<h3 class="my-3">Детали</h3>
+				<ul>
+					<li>Цена: @Model.Price₽</li>
+					@if (Model.Address != null)
+					{
+						<li>Улица: @Model.Address.Street</li>
+						<li>Город: @Model.Address.City</li>
+						<li>Область: @Model.Address.State</li>
+					}
+					else
+					{
+						<li>Адрес не указан</li>
+					}
+				</ul>
+			</div>
 		</div>
 	</div>
 	<div class="row">

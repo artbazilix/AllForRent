@@ -1,64 +1,104 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AllForRent</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/AllForRent.styles.css" asp-append-version="true" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>@ViewData["Title"] - AllForRent</title>
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/AllForRent.styles.css" asp-append-version="true" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-    <header class="p-3 ">
-        <div class="container-fluid">
-            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-                <a class="navbar-brand d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">AllForRent</a>
+	<header class="p-3 ">
+		<div class="container-fluid">
+			<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+				<a class="navbar-brand d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">AllForRent</a>
 
-                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная</a></li>
-                    <li><a class="nav-link text-dark" asp-area="" asp-controller="Catalog" asp-action="Index">Каталог</a></li>
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Список пользователей</a></li>
-                    }
-                </ul>
+				<ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+					<li><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная</a></li>
+					<li><a class="nav-link text-dark" asp-area="" asp-controller="Catalog" asp-action="Index">Каталог</a></li>
+					@if (User.Identity.IsAuthenticated)
+					{
+						<li><a class="nav-link text-dark" asp-area="" asp-controller="User" asp-action="Index">Список пользователей</a></li>
+					}
+				</ul>
 
-                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-                    <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Поиск..." aria-label="Search">
-                </form>
+				<script>
+					$(document).ready(function () {
+						$("#searchTerm").keyup(function () {
+							var searchText = $(this).val();
+							if (searchText != '') {
+								$.ajax({
+									url: '/Home/AutoCompleteSearch',
+									method: 'post',
+									data: { searchTerm: searchText },
+									success: function (response) {
+										var results = response;
+										var html = '';
+										for (var i = 0; i < results.length; i++) {
+											html += '<li><a href="#">' + results[i] + '</a></li>';
+										}
+										$("#searchResult").html(html);
+									}
+								});
+							}
+							else {
+								$("#searchResult").html('');
+							}
+						});
+						$("#searchResult").on('click', 'a', function (event) {
+							event.preventDefault();
+							console.log("Link clicked");
+							$('#searchTerm').val($(this).text());
+							$("#searchResult").html('');
+							$('form[role="search"]').submit();
+						});
+					});
+				</script>
 
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <div class="text-end">
-                        <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a>
-                        <a type="button" class="btn btn-warning" asp-area="" asp-controller="Dashboard" asp-action="index">Личный кабинет</a>
-                    </div>
-                }
-                else
-                {
-                    <div class="text-end">
-                        <a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Account" asp-action="Login">Войти</a>
-                        <a type="button" class="btn btn-warning" asp-area="" asp-controller="Account" asp-action="Registration">Зарегистрироваться</a>
-                    </div>
-                }
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+				<form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3 d-flex" role="search" action="/Home/Search" method="get">
+					<div style="position: relative;">
+						<input type="search" id="searchTerm" name="searchTerm" class="form-control form-control-dark text-bg-dark" placeholder="Поиск..." aria-label="Search" autocomplete="off">
+						<div id="searchResult" class="position-absolute w-100"></div>
+					</div>
+					<input type="submit" value="Поиск" class="btn btn-primary">
+				</form>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - AllForRent - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+				@if (User.Identity.IsAuthenticated)
+				{
+					<div class="text-end">
+						<a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Account" asp-action="Logout">Выйти</a>
+						<a type="button" class="btn btn-warning" asp-area="" asp-controller="Dashboard" asp-action="index">Личный кабинет</a>
+					</div>
+				}
+				else
+				{
+					<div class="text-end">
+						<a type="button" class="btn btn-outline-dark me-2" asp-area="" asp-controller="Account" asp-action="Login">Войти</a>
+						<a type="button" class="btn btn-warning" asp-area="" asp-controller="Account" asp-action="Registration">Зарегистрироваться</a>
+					</div>
+				}
+			</div>
+		</div>
+	</header>
+
+
+	<div class="container">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+
+	<footer class="border-top footer text-muted">
+		<div class="container">
+			© 2023 - AllForRent - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+		</div>
+	</footer>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

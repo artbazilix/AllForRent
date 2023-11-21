@@ -16,3 +16,23 @@ html {
 body {
     margin-bottom: 60px;
 }
+
+#searchResult {
+    width: auto;
+    max-width: 100%;
+    margin-top: 25px;
+    background-color: #f8f9fa;
+    z-index: 1;
+    /*border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    box-sizing: border-box;*/
+}
+
+    #searchResult li {
+        padding: 10px;
+    }
+
+        #searchResult li:hover {
+            background-color: #e9ecef;
+        }
+
