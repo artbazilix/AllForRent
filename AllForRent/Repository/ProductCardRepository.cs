@@ -46,20 +46,48 @@ namespace AllForRent.Repository
 
         public bool Delete(ProductCard productCard)
         {
+            if (productCard.Image != null)
+            {
+                _context.Remove(productCard.Image);
+            }
+
+            if (productCard.Address != null)
+            {
+                _context.Remove(productCard.Address);
+            }
+
             _context.Remove(productCard);
             return Save();
         }
 
         public bool Update(ProductCard productCard)
         {
-            _context.Update(productCard);
+            if (productCard.Image != null)
+            {
+                _context.Entry(productCard.Image).State = EntityState.Modified;
+            }
+
+            if (productCard.Address != null)
+            {
+                _context.Entry(productCard.Address).State = EntityState.Modified;
+            }
+
+            _context.Entry(productCard).State = EntityState.Modified;
             return Save();
         }
 
         public bool Save()
         {
-            var saved = _context.SaveChanges();
-            return saved > 0;
+            try
+            {
+                var saved = _context.SaveChanges();
+                return saved > 0;
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine("Произошла ошибка при сохранении изменений: " + ex.Message);
+                return false;
+            }
         }
 
         public async Task<IEnumerable<ProductCard>> GetProductCardByCity(string city)
