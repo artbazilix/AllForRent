@@ -149,7 +149,7 @@ namespace AllForRent.Controllers
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteProductCard(int id)
         {
-            var productCardDetails = await _productCardRepository.GetByIdAsync(id);
+            var productCardDetails = await _productCardRepository.GetByIdAsyncNoTracking(id);
             if (productCardDetails == null) return View("Error");
 
             _productCardRepository.Delete(productCardDetails);

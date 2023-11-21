@@ -13,5 +13,8 @@ namespace AllForRent.Models
         [ForeignKey("Address")]
         public int? AddressId { get; set; }
         public Address? Address { get; set; }
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Balance { get; set; }
     }
 }
