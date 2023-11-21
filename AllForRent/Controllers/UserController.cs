@@ -120,7 +120,7 @@ namespace AllForRent.Controllers
                 return View("Error");
             }
 
-            var sellerCard = await _productCardRepository.GetByIdAsyncNoTracking(id);
+            var sellerCard = await _productCardRepository.GetByIdAsync(id);
 
             if (sellerCard != null)
             {
@@ -132,15 +132,21 @@ namespace AllForRent.Controllers
 
                 if (sellerCard.Image != null)
                 {
-                    _context.Update(sellerCard.Image);
+                    // Обновление изображений
+
+                    _context.Entry(sellerCard.Image).State = EntityState.Modified;
                 }
 
                 if (sellerCard.Address != null)
                 {
-                    _context.Update(sellerCard.Address);
+                    sellerCard.Address.Street = productCardVM.Street;
+                    sellerCard.Address.City = productCardVM.City;
+                    sellerCard.Address.State = productCardVM.State;
+                    _context.Entry(sellerCard.Address).State = EntityState.Modified;
                 }
 
-                _productCardRepository.Update(sellerCard);
+                _context.Entry(sellerCard).State = EntityState.Modified;
+                _productCardRepository.Save();
                 return RedirectToAction("Index", "Dashboard");
             }
             else
@@ -235,21 +241,31 @@ namespace AllForRent.Controllers
 			};
 		}
 
-		private async Task UpdateImages(ProductCard sellerCard, EditProductCardViewModel productCardVM)
-		{
-			if (sellerCard.Image == null)
-			{
-				sellerCard.Image = new ProductCardImages();
-			}
+        private async Task UpdateImages(ProductCard sellerCard, EditProductCardViewModel productCardVM)
+        {
+            if (sellerCard.Image == null)
+            {
+                sellerCard.Image = new ProductCardImages();
+            }
 
-			if (productCardVM.Images != null && productCardVM.Images.Count > 0)
-			{
-				await DeleteExistingImages(sellerCard);
-				await AddNewImages(sellerCard, productCardVM);
-			}
-		}
+            if (productCardVM.Images != null && productCardVM.Images.Count > 0)
+            {
+                for (int i = 0; i < productCardVM.Images.Count; i++)
+                {
+                    var image = productCardVM.Images[i];
+                    if (image != null)
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await image.CopyToAsync(memoryStream);
+                            // Сохраните изображение в нужное место и обновите свойства изображения в sellerCard
+                        }
+                    }
+                }
+            }
+        }
 
-		private async Task DeleteExistingImages(ProductCard sellerCard)
+        private async Task DeleteExistingImages(ProductCard sellerCard)
 		{
 			try
 			{

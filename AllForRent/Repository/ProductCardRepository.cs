@@ -64,22 +64,30 @@ namespace AllForRent.Repository
         {
             if (productCard.Image != null)
             {
-                _context.Update(productCard.Image);
+                _context.Entry(productCard.Image).State = EntityState.Modified;
             }
 
             if (productCard.Address != null)
             {
-                _context.Update(productCard.Address);
+                _context.Entry(productCard.Address).State = EntityState.Modified;
             }
 
-            _context.Update(productCard);
+            _context.Entry(productCard).State = EntityState.Modified;
             return Save();
         }
 
         public bool Save()
         {
-            var saved = _context.SaveChanges();
-            return saved > 0;
+            try
+            {
+                var saved = _context.SaveChanges();
+                return saved > 0;
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine("Произошла ошибка при сохранении изменений: " + ex.Message);
+                return false;
+            }
         }
 
         public async Task<IEnumerable<ProductCard>> GetProductCardByCity(string city)
