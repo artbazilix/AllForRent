@@ -1,0 +1,36 @@
+﻿@using AllForRent.ViewModels
+@model PurchaseViewModel
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Оплата</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="@Url.Action("ConfirmPurchase", "Catalog")">
+                        <input type="hidden" name="productId" value="@Model.ProductId" />
+                        <div class="form-group">
+                            <label>Имя пользователя</label>
+                            <input type="text" class="form-control" value="@Model.UserName" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label>Текущий баланс</label>
+                            <input type="text" class="form-control" value="@Model.UserBalance" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label>Название товара</label>
+                            <input type="text" class="form-control" value="@Model.ProductName" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label>Цена товара</label>
+                            <input type="text" class="form-control" value="@Model.ProductPrice" readonly />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Подтвердить покупку</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
