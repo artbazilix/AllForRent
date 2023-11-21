@@ -46,12 +46,32 @@ namespace AllForRent.Repository
 
         public bool Delete(ProductCard productCard)
         {
+            if (productCard.Image != null)
+            {
+                _context.Remove(productCard.Image);
+            }
+
+            if (productCard.Address != null)
+            {
+                _context.Remove(productCard.Address);
+            }
+
             _context.Remove(productCard);
             return Save();
         }
 
         public bool Update(ProductCard productCard)
         {
+            if (productCard.Image != null)
+            {
+                _context.Update(productCard.Image);
+            }
+
+            if (productCard.Address != null)
+            {
+                _context.Update(productCard.Address);
+            }
+
             _context.Update(productCard);
             return Save();
         }

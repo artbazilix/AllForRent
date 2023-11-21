@@ -112,34 +112,44 @@ namespace AllForRent.Controllers
 
 
         [HttpPost]
-		public async Task<IActionResult> Edit(int id, EditProductCardViewModel productCardVM)
-		{
-			if (!ModelState.IsValid)
-			{
-				ModelState.AddModelError("", "Ошибка редактирования");
-				return View("Error");
-			}
+        public async Task<IActionResult> Edit(int id, EditProductCardViewModel productCardVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Ошибка редактирования");
+                return View("Error");
+            }
 
-			var sellerCard = await _productCardRepository.GetByIdAsyncNoTracking(id);
+            var sellerCard = await _productCardRepository.GetByIdAsyncNoTracking(id);
 
-			if (sellerCard != null)
-			{
-				await UpdateImages(sellerCard, productCardVM);
+            if (sellerCard != null)
+            {
+                await UpdateImages(sellerCard, productCardVM);
 
-				sellerCard.HeadTitle = productCardVM.HeadTitle;
-				sellerCard.Description = productCardVM.Description;
-				sellerCard.Price = productCardVM.Price;
+                sellerCard.HeadTitle = productCardVM.HeadTitle;
+                sellerCard.Description = productCardVM.Description;
+                sellerCard.Price = productCardVM.Price;
 
-				_productCardRepository.Update(sellerCard);
-				return RedirectToAction("Index", "Dashboard");
-			}
-			else
-			{
-				return View(productCardVM);
-			}
-		}
+                if (sellerCard.Image != null)
+                {
+                    _context.Update(sellerCard.Image);
+                }
 
-		public async Task<IActionResult> Delete(int id)
+                if (sellerCard.Address != null)
+                {
+                    _context.Update(sellerCard.Address);
+                }
+
+                _productCardRepository.Update(sellerCard);
+                return RedirectToAction("Index", "Dashboard");
+            }
+            else
+            {
+                return View(productCardVM);
+            }
+        }
+
+        public async Task<IActionResult> Delete(int id)
 		{
 			var productCardDetails = await _productCardRepository.GetByIdAsync(id);
 			if (productCardDetails == null) return View("Error");
