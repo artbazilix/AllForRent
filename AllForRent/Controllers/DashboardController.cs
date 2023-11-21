@@ -4,6 +4,7 @@ using AllForRent.ViewModels;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace AllForRent.Controllers
 {
@@ -23,11 +24,16 @@ namespace AllForRent.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var curUserId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var user = await _dashboardRespository.GetUserById(curUserId);
             var userProductCards = await _dashboardRespository.GetAllUserProductCards();
+
             var dashboardViewModel = new DashboardViewModel()
             {
-                ProductCards = userProductCards
+                ProductCards = userProductCards,
+                Balance = user.Balance
             };
+
             return View(dashboardViewModel);
         }
 
@@ -93,6 +99,22 @@ namespace AllForRent.Controllers
                 return RedirectToAction("Index");
             }
 
+        }
+
+        public async Task<IActionResult> PurchaseHistory()
+        {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var purchases = await _dashboardRespository.GetPurchasesByUserId(userId);
+
+            var purchaseHistory = purchases.Select(p => new PurchaseHistoryViewModel
+            {
+                UserName = p.UserName,
+                ProductName = p.ProductName,
+                ProductPrice = p.ProductPrice,
+                PurchaseTime = p.PurchaseTime
+            });
+
+            return View(purchaseHistory);
         }
 
         private void MapUserEdit(AppUser user, EditUserDashboardViewModel editVM, ImageUploadResult photoResult)

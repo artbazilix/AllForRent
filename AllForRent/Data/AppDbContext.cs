@@ -13,5 +13,6 @@ namespace AllForRent.Data
         public DbSet<ProductCard> ProductCards { get; set; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<ProductCardImages> ProductCardsImages { get; set; }
-    }
+		public DbSet<Purchase> Purchases { get; set; }
+	}
 }
