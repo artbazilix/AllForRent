@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using AllForRent.Interfaces;
 using AllForRent.Models;
@@ -80,7 +79,6 @@ namespace AllForRent.Controllers
                 return View("Error", errorModel);
             }
 
-            // Создайте новую покупку и сохраните ее в базе данных
             var purchase = new Purchase
             {
                 UserId = userId,
