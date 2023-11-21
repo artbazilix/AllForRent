@@ -1,0 +1,22 @@
+﻿@model IEnumerable<ProductCard>
+
+<div class="container">
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <img class="card-img-top" src="@(product.Image?.First ?? "/images/default.png")" alt="Card image cap">
+                    <div class="card-body">
+                        <h5 class="card-title">@product.HeadTitle</h5>
+                        <p class="card-text">@product.Description</p>
+                        <p class="card-text"><small class="text-muted">@product.Address?.City</small></p>
+                        <p class="card-price">@product.Price₽</p>
+                        <p class="card-user">@product.AppUser?.UserName</p>
+                        <a href="@Url.Action("Detail", "Catalog", new { id = product.Id })" class="btn btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

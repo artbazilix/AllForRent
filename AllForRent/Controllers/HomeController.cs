@@ -3,12 +3,11 @@ using AllForRent.Interfaces;
 using AllForRent.Models;
 using AllForRent.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq.Expressions;
 using System.Net;
-using System.Net.NetworkInformation;
 
 namespace AllForRent.Controllers
 {
@@ -52,6 +51,24 @@ namespace AllForRent.Controllers
 				homeViewModel.ProductCards = null;
 			}
 			return View(homeViewModel);
+		}
+
+        public IActionResult Search(string searchTerm)
+        {
+            var results = _productCardRepository.SearchByName(searchTerm)
+                                                .Include(p => p.Image)
+                                                .Include(p => p.Address)
+                                                .Include(p => p.AppUser);
+            return View(results);
+        }
+
+
+        public IActionResult AutoCompleteSearch(string searchTerm)
+		{
+			var products = _productCardRepository.SearchByName(searchTerm);
+			var titles = products.Select(p => p.HeadTitle).ToList();
+			Console.WriteLine(string.Join(", ", titles));
+			return Json(titles);
 		}
 
 		public IActionResult Privacy()

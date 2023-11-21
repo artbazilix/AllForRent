@@ -15,17 +15,27 @@ namespace AllForRent.Repository
 
         public async Task<IEnumerable<ProductCard>> GetAll()
         {
-			return await _context.ProductCards.Include(p => p.Image).ToListAsync();
+			return await _context.ProductCards
+                .Include(p => p.Image)
+                .Include(p => p.Address)
+                .ToListAsync();
 		}
 
 		public async Task<ProductCard?> GetByIdAsync(int id)
 		{
-			return await _context.ProductCards.Include(p => p.Image).FirstOrDefaultAsync(x => x.Id == id);
+			return await _context.ProductCards
+                .Include(p => p.Image)
+                .Include(p => p.Address)
+                .FirstOrDefaultAsync(x => x.Id == id);
 		}
 
         public async Task<ProductCard?> GetByIdAsyncNoTracking(int id)
         {
-            return await _context.ProductCards.Include(p => p.Image).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.ProductCards
+                .Include(p => p.Image)
+                .Include(p => p.Address)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public bool Add(ProductCard productCard)
@@ -60,6 +70,21 @@ namespace AllForRent.Repository
 				.Where(c => c.Address.City.Contains(city))
                 .Distinct()
                 .ToListAsync();
+        }
+
+		public async Task<ProductCard?> GetByIdWithAddressAndImageAsync(int id)
+		{
+			return await _context.ProductCards
+				.Include(p => p.Address)
+				.Include(p => p.Image)
+				.FirstOrDefaultAsync(x => x.Id == id);
+		}
+
+        public IQueryable<ProductCard> SearchByName(string searchTerm)
+        {
+            return _context.ProductCards
+                           .Where(p => p.HeadTitle.Contains(searchTerm))
+                           .AsQueryable();
         }
     }
 }

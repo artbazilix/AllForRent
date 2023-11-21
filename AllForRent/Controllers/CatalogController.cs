@@ -2,6 +2,7 @@
 using AllForRent.Models;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace AllForRent.Controllers
 {
     public class CatalogController : Controller
@@ -19,8 +20,9 @@ namespace AllForRent.Controllers
 
 		public async Task<IActionResult> Detail(int id)
 		{
-			var productCard = await _productCardRepository.GetByIdAsync(id);
+			var productCard = await _productCardRepository.GetByIdWithAddressAndImageAsync(id);
 			return productCard == null ? NotFound() : View(productCard);
 		}
-    }
+
+	}
 }
