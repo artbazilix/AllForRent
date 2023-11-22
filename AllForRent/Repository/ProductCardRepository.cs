@@ -114,5 +114,11 @@ namespace AllForRent.Repository
                            .Where(p => p.HeadTitle.Contains(searchTerm))
                            .AsQueryable();
         }
+
+        public async Task<string> GetOwnerId(int productId)
+        {
+            var product = await _context.ProductCards.FindAsync(productId);
+            return product.AppUserId;
+        }
     }
 }

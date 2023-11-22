@@ -63,6 +63,14 @@ namespace AllForRent.Controllers
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userRepository.GetUserById(userId);
 
+            var ownerId = await _productCardRepository.GetOwnerId(productId);
+
+            if (ownerId == user.Id)
+            {
+                var errorModel = new ErrorViewModel { Message = "Вы не можете купить свой собственный товар" };
+                return View("Error", errorModel);
+            }
+
             if (product.Price.HasValue)
             {
                 if (user.Balance < product.Price.Value)
@@ -72,6 +80,11 @@ namespace AllForRent.Controllers
                 }
 
                 user.Balance -= product.Price.Value;
+
+                var seller = await _userRepository.GetUserById(ownerId);
+                seller.Balance += product.Price.Value;
+
+                _userRepository.Update(seller);
             }
             else
             {
@@ -87,13 +100,11 @@ namespace AllForRent.Controllers
                 ProductPrice = product.Price.HasValue ? product.Price.Value : 0,
                 PurchaseTime = DateTime.Now
             };
-            await _dashboardRepository.Add(purchase);
 
+            await _dashboardRepository.Add(purchase);
             _userRepository.Update(user);
 
             return RedirectToAction("PurchaseHistory", "Dashboard");
         }
-
     }
-
 }
