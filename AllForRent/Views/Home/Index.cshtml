@@ -11,8 +11,8 @@
             <h1 class="fw-light">Всё в аренду</h1>
             <p class="lead text-muted">Добро пожаловать в мир безграничных возможностей с нашим сервисом аренды цифровых товаров! Мы предоставляем вам доступ к передовым сервисам без необходимости их приобретения.</p>
             <p>
-                <a href="#" class="btn btn-primary my-2">Взять в аренду</a>
-                <a href="#" class="btn btn-secondary my-2">Стать продавцом</a>
+                <a type="button" class="btn btn-primary my-2" asp-area="" asp-controller="Catalog" asp-action="Index">Взять в аренду</a>
+                <a type="button" class="btn btn-secondary my-2" asp-area="" asp-controller="User" asp-action="Create">Стать продавцом</a>
             </p>
         </div>
     </div>
@@ -23,8 +23,7 @@
         @if (Model.ProductCards == null)
         {
             <h1 class="fw-light">
-                В вашем регионе нет объявлений, <a asp-area="" asp-controller="Account"
-                                                            asp-action="Login">войдите</a> и будьте первым!
+                В вашем регионе нет объявлений, <a asp-area="" asp-controller="Account" asp-action="Login">войдите</a> и будьте первым!
             </h1>
         }
         else
@@ -32,9 +31,6 @@
             <div class="row justify-content-between mb-5">
                 <div class="col-auto">
                     <h3>Предложения в городе @Model.City</h3>
-                </div>
-                <div class="col-auto">
-                    <a href="#" class="btn btn-outline-primary">View all</a>
                 </div>
             </div>
             <ul class="row feature-list feature-list-sm">

@@ -27,4 +27,7 @@ public class EditProductCardViewModel
     public string? Third { get; set; }
     public string? Fourth { get; set; }
     public string? Fifth { get; set; }
+
+	public List<IFormFile>? NewImages { get; set; }
+	public List<bool>? DeleteImages { get; set; }
 }

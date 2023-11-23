@@ -62,6 +62,7 @@ namespace AllForRent.Repository
 
         public bool Update(ProductCard productCard)
         {
+            Console.WriteLine("Update method called");
             if (productCard.Image != null)
             {
                 _context.Entry(productCard.Image).State = EntityState.Modified;
@@ -78,9 +79,11 @@ namespace AllForRent.Repository
 
         public bool Save()
         {
+            Console.WriteLine("Save method called");
             try
             {
                 var saved = _context.SaveChanges();
+                Console.WriteLine($"Saved changes: {saved}");
                 return saved > 0;
             }
             catch (DbUpdateException ex)

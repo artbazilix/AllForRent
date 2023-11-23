@@ -101,6 +101,7 @@ namespace AllForRent.Controllers
 
         }
 
+        [HttpGet]
         public async Task<IActionResult> PurchaseHistory()
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
