@@ -15,5 +15,6 @@ namespace AllForRent.Interfaces
         Task<IEnumerable<ProductCard>> GetProductCardByCity(string city);
 		Task<ProductCard?> GetByIdWithAddressAndImageAsync(int id);
         IQueryable<ProductCard> SearchByName(string name);
+        Task<string> GetOwnerId(int productId);
     }
 }

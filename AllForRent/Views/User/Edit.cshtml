@@ -37,22 +37,15 @@
         <span asp-validation-for="State" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="Images" class="form-label">Добавьте изображение</label>
-        <input asp-for="Images" class="form-control" type="file" multiple>
-        <span asp-validation-for="Images" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Текущие изображения</label>
-        <div class="d-flex flex-row">
-            @for (var i = 0; i < Model.ImageUrls.Count; i++)
-            {
-                <div class="me-3 position-relative">
-                    <input type="image" id="@($"image{i + 1}")" src="@Model.ImageUrls[i]" alt="Изображение @(i + 1)" style="width: 100px; height: 100px;">
-                    <button type="button" class="btn btn-danger position-absolute top-0 end-0" onclick="deleteImage(@($"image{i + 1}"), @($"input{i + 1}"))">X</button>
-                    <input type="file" id="@($"input{i + 1}")" name="Images" style="display: none;" onchange="previewImage(event, @($"image{i + 1}"))">
-                </div>
-            }
-        </div>
+        <label class="form-label">Изображения</label>
+        @for (int i = 0; i < Model.ImageUrls.Count; i++)
+        {
+            <div class="mb-3">
+                <img src="@Model.ImageUrls[i]" alt="Изображение @(i + 1)" style="width: 100px; height: 100px;">
+                <input asp-for="DeleteImages[i]" type="checkbox"> Удалить
+                <input asp-for="NewImages[i]" type="file">
+            </div>
+        }
     </div>
     <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>

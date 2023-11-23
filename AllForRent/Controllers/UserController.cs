@@ -7,90 +7,95 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AllForRent.Controllers
 {
-	public class UserController : Controller
-	{
-		private readonly IUserRepository _usersRepository;
-		private readonly IProductCardRepository _productCardRepository;
-		private readonly IPhotoService _photoService;
-		private readonly IHttpContextAccessor _contextAccessor;
-		private readonly AppDbContext _context;
+    public class UserController : Controller
+    {
+        private readonly IUserRepository _usersRepository;
+        private readonly IProductCardRepository _productCardRepository;
+        private readonly IPhotoService _photoService;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly AppDbContext _context;
 
-		public UserController(IUserRepository userRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor, AppDbContext context)
-		{
-			_usersRepository = userRepository;
-			_productCardRepository = productCardRepository;
-			_photoService = photoService;
-			_contextAccessor = contextAccessor;
-			_context = context;
-		}
+        public UserController(IUserRepository userRepository, IProductCardRepository productCardRepository, IPhotoService photoService, IHttpContextAccessor contextAccessor, AppDbContext context)
+        {
+            _usersRepository = userRepository;
+            _productCardRepository = productCardRepository;
+            _photoService = photoService;
+            _contextAccessor = contextAccessor;
+            _context = context;
+        }
 
-		public async Task<IActionResult> Index()
-		{
-			var users = await _usersRepository.GetAllUsers();
-			List<UserViewModel> result = new List<UserViewModel>();
-			foreach (var user in users)
-			{
-				var userViewModel = new UserViewModel()
-				{
-					Id = user.Id,
-					UserName = user.UserName,
-					City = user.Address?.City
-				};
-				result.Add(userViewModel);
-			}
-			return View(result);
-		}
+        public async Task<IActionResult> Index()
+        {
+            var users = await _usersRepository.GetAllUsers();
+            List<UserViewModel> result = new List<UserViewModel>();
+            foreach (var user in users)
+            {
+                var userViewModel = new UserViewModel()
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    City = user.Address?.City
+                };
+                result.Add(userViewModel);
+            }
+            return View(result);
+        }
 
-		public async Task<IActionResult> Detail(string id)
-		{
-			var user = await _usersRepository.GetUserById(id);
-			if (user == null)
-			{
-				return NotFound();
-			}
-			var userDetailViewModel = new UserDetailViewModel()
-			{
-				Id = user.Id,
-				UserName = user.UserName,
-				Street = user.Address?.Street,
-				City = user.Address?.City,
-				State = user.Address?.State,
+        public async Task<IActionResult> Detail(string id)
+        {
+            var user = await _usersRepository.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var userDetailViewModel = new UserDetailViewModel()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Street = user.Address?.Street,
+                City = user.Address?.City,
+                State = user.Address?.State,
                 ProfileImageUrl = user.ProfileImageUrl
             };
-			return View(userDetailViewModel);
-		}
+            return View(userDetailViewModel);
+        }
 
-		[HttpGet]
-		public IActionResult Create()
-		{
-			var curUserId = _contextAccessor.HttpContext.User.GetUserId();
-			var createClubViewModel = new CreateProductCardViewModel { AppUserId = curUserId };
-			return View(createClubViewModel);
-		}
+        [HttpGet]
+        public IActionResult Create()
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-		[HttpPost]
-		public async Task<IActionResult> Create(CreateProductCardViewModel productCardVM)
-		{
-			if (!ModelState.IsValid)
-			{
-				ModelState.AddModelError("", "Ошибка загрузки изображения");
-				return View(productCardVM);
-			}
+            var curUserId = _contextAccessor.HttpContext.User.GetUserId();
+            var createClubViewModel = new CreateProductCardViewModel { AppUserId = curUserId };
+            return View(createClubViewModel);
+        }
 
-			var productCardImages = await AddImages(productCardVM);
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateProductCardViewModel productCardVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Ошибка загрузки изображения");
+                return View(productCardVM);
+            }
 
-			if (!string.IsNullOrEmpty(productCardVM.AppUserId))
-			{
-				var productCard = CreateProductCard(productCardVM, productCardImages);
-				_productCardRepository.Add(productCard);
-				return RedirectToAction("Index", "Dashboard");
-			}
-			else
-			{
-				ModelState.AddModelError("", "Ошибка: некоторые данные отсутствуют");
-				return View(productCardVM);
-			}
-		}
+            var productCardImages = await AddImages(productCardVM);
+
+            if (!string.IsNullOrEmpty(productCardVM.AppUserId))
+            {
+                var productCard = CreateProductCard(productCardVM, productCardImages);
+                _productCardRepository.Add(productCard);
+                return RedirectToAction("Index", "Dashboard");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Ошибка: некоторые данные отсутствуют");
+                return View(productCardVM);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -110,10 +115,10 @@ namespace AllForRent.Controllers
             return View(productCardVM);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> Edit(int id, EditProductCardViewModel productCardVM)
         {
+            Console.WriteLine("Edit method called");  // Добавьте эту строку
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError("", "Ошибка редактирования");
@@ -132,8 +137,6 @@ namespace AllForRent.Controllers
 
                 if (sellerCard.Image != null)
                 {
-                    // Обновление изображений
-
                     _context.Entry(sellerCard.Image).State = EntityState.Modified;
                 }
 
@@ -156,11 +159,11 @@ namespace AllForRent.Controllers
         }
 
         public async Task<IActionResult> Delete(int id)
-		{
-			var productCardDetails = await _productCardRepository.GetByIdAsync(id);
-			if (productCardDetails == null) return View("Error");
-			return View(productCardDetails);
-		}
+        {
+            var productCardDetails = await _productCardRepository.GetByIdAsync(id);
+            if (productCardDetails == null) return View("Error");
+            return View(productCardDetails);
+        }
 
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteProductCard(int id)
@@ -174,38 +177,42 @@ namespace AllForRent.Controllers
         }
 
         private async Task<ProductCardImages> AddImages(CreateProductCardViewModel productCardVM)
-		{
-			var productCardImages = new ProductCardImages();
-			var imageProperties = new List<string> { "First", "Second", "Third", "Fourth", "Fifth" };
-			int index = 0;
+        {
+            var productCardImages = new ProductCardImages();
+            var imageProperties = new List<string> { "First", "Second", "Third", "Fourth", "Fifth" };
+            int index = 0;
 
-			foreach (var image in productCardVM.Images)
-			{
-				var result = await _photoService.AddPhotoAsync(image);
-				if (result != null && index < imageProperties.Count)
-				{
-					typeof(ProductCardImages).GetProperty(imageProperties[index]).SetValue(productCardImages, result.Url.ToString());
-					index++;
-				}
-			}
-			return productCardImages;
-		}
+            if (productCardVM.Images != null)
+            {
+                foreach (var image in productCardVM.Images)
+                {
+                    var result = await _photoService.AddPhotoAsync(image);
+                    if (result != null && index < imageProperties.Count)
+                    {
+                        typeof(ProductCardImages).GetProperty(imageProperties[index]).SetValue(productCardImages, result.Url.ToString());
+                        index++;
+                    }
+                }
+            }
+            return productCardImages;
+        }
 
-		private ProductCard CreateProductCard(CreateProductCardViewModel productCardVM, ProductCardImages productCardImages)
-		{
+
+        private ProductCard CreateProductCard(CreateProductCardViewModel productCardVM, ProductCardImages productCardImages)
+        {
             var address = _context.Addresses.Add(productCardVM.Address);
             _context.SaveChanges();
 
             return new ProductCard
-			{
-				HeadTitle = productCardVM.Name,
-				Description = productCardVM.Description,
-				Price = productCardVM.Price,
-				Image = productCardImages,
-				AppUserId = productCardVM.AppUserId,
+            {
+                HeadTitle = productCardVM.Name,
+                Description = productCardVM.Description,
+                Price = productCardVM.Price,
+                Image = productCardImages,
+                AppUserId = productCardVM.AppUserId,
                 AddressId = address.Entity.Id
             };
-		}
+        }
 
         private async Task<ProductCard> GetProductCard(int id)
         {
@@ -224,22 +231,22 @@ namespace AllForRent.Controllers
         }
 
         private EditProductCardViewModel CreateViewModel(ProductCard productCard)
-		{
-			return new EditProductCardViewModel
-			{
-				HeadTitle = productCard.HeadTitle,
-				Description = productCard.Description,
-				Price = productCard.Price,
-				ImageUrls = new List<string>
-		{
-			productCard.Image.First,
-			productCard.Image.Second,
-			productCard.Image.Third,
-			productCard.Image.Fourth,
-			productCard.Image.Fifth
-		}
-			};
-		}
+        {
+            return new EditProductCardViewModel
+            {
+                HeadTitle = productCard.HeadTitle,
+                Description = productCard.Description,
+                Price = productCard.Price,
+                ImageUrls = new List<string>
+        {
+            productCard.Image.First,
+            productCard.Image.Second,
+            productCard.Image.Third,
+            productCard.Image.Fourth,
+            productCard.Image.Fifth
+        }
+            };
+        }
 
         private async Task UpdateImages(ProductCard sellerCard, EditProductCardViewModel productCardVM)
         {
@@ -248,51 +255,37 @@ namespace AllForRent.Controllers
                 sellerCard.Image = new ProductCardImages();
             }
 
-            if (productCardVM.Images != null && productCardVM.Images.Count > 0)
+            // Удаление изображений
+            var imageProperties = new List<string> { "First", "Second", "Third", "Fourth", "Fifth" };
+            for (int i = 0; i < productCardVM.DeleteImages.Count; i++)
             {
-                for (int i = 0; i < productCardVM.Images.Count; i++)
+                if (productCardVM.DeleteImages[i])
                 {
-                    var image = productCardVM.Images[i];
-                    if (image != null)
+                    typeof(ProductCardImages).GetProperty(imageProperties[i]).SetValue(sellerCard.Image, string.Empty);
+                    _context.Entry(sellerCard.Image).Property(imageProperties[i]).IsModified = true;
+                }
+            }
+
+            // Добавление или замена изображений
+            if (productCardVM.NewImages != null)
+            {
+                for (int i = 0; i < productCardVM.NewImages.Count; i++)
+                {
+                    var newImage = productCardVM.NewImages[i];
+                    if (newImage != null)
                     {
-                        using (var memoryStream = new MemoryStream())
+                        var uploadResult = await _photoService.AddPhotoAsync(newImage);
+                        if (uploadResult != null && uploadResult.Url != null)
                         {
-                            await image.CopyToAsync(memoryStream);
-                            // Сохраните изображение в нужное место и обновите свойства изображения в sellerCard
+                            typeof(ProductCardImages).GetProperty(imageProperties[i]).SetValue(sellerCard.Image, uploadResult.Url.ToString());
+                            _context.Entry(sellerCard.Image).Property(imageProperties[i]).IsModified = true;
                         }
                     }
                 }
             }
+
+            // Сохранение изменений в базе данных
+            _context.SaveChanges();
         }
-
-        private async Task DeleteExistingImages(ProductCard sellerCard)
-		{
-			try
-			{
-				var images = new List<string> { sellerCard.Image.First, sellerCard.Image.Second, sellerCard.Image.Third, sellerCard.Image.Fourth, sellerCard.Image.Fifth };
-				foreach (var image in images)
-				{
-					if (!string.IsNullOrEmpty(image))
-						await _photoService.DeletePhotoAsync(image);
-				}
-			}
-			catch (Exception ex)
-			{
-				ModelState.AddModelError("", "Не удалось удалить фотографию");
-				throw;
-			}
-		}
-
-		private async Task AddNewImages(ProductCard sellerCard, EditProductCardViewModel productCardVM)
-		{
-			var images = new List<string> { sellerCard.Image.First, sellerCard.Image.Second, sellerCard.Image.Third, sellerCard.Image.Fourth, sellerCard.Image.Fifth };
-			foreach (var image in productCardVM.Images)
-			{
-				var photoResult = await _photoService.AddPhotoAsync(image);
-				var emptyImage = images.FirstOrDefault(i => string.IsNullOrEmpty(i));
-				if (emptyImage != null)
-					emptyImage = photoResult.Url.ToString();
-			}
-		}
-	}
+    }
 }

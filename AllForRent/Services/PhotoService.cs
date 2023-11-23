@@ -22,6 +22,7 @@ namespace AllForRent.Services
 
         public async Task<ImageUploadResult> AddPhotoAsync(IFormFile file)
         {
+            Console.WriteLine("AddPhotoAsync method called");
             var uploadResult = new ImageUploadResult();
             if (file != null && file.Length > 0)
             {
@@ -33,6 +34,7 @@ namespace AllForRent.Services
                 };
                 uploadResult = await _cloundinary.UploadAsync(uploadParams);
             }
+            Console.WriteLine($"Uploaded image URL: {uploadResult.Url}");
             return uploadResult;
         }
 

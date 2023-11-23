@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AllForRent.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231121211929_Purcharev3")]
-    partial class Purcharev3
+    [Migration("20231123011127_Initialv3")]
+    partial class Initialv3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -160,6 +160,10 @@ namespace AllForRent.Migrations
                     b.Property<int>("RentTime")
                         .HasColumnType("int");
 
+                    b.Property<string>("SaleDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
@@ -180,6 +184,7 @@ namespace AllForRent.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Fifth")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("First")
@@ -187,12 +192,15 @@ namespace AllForRent.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fourth")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Second")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Third")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
