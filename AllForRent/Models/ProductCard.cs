@@ -9,7 +9,8 @@ namespace AllForRent.Models
         [Key]
         public int Id { get; set; }
         public string HeadTitle { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
+        public string SaleDescription { get; set; } = string.Empty;
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Price { get; set; }

@@ -28,7 +28,7 @@ namespace AllForRent.Data
                     RentTime = RentTime.OneDay,
                     Address = new Address()
                     {
-                        City = "Charlotte",
+                        City = "Smolensk",
                         State = "NC"
                     }
                  },
@@ -41,7 +41,7 @@ namespace AllForRent.Data
                     RentTime = RentTime.OneWeek,
                     Address = new Address()
                     {
-                        City = "Lotte",
+                        City = "Smolensk",
                         State = "WS"
                     }
                  },
@@ -54,7 +54,7 @@ namespace AllForRent.Data
                     RentTime = RentTime.OneMonth,
                     Address = new Address()
                     {
-                        City = "Gawe",
+                        City = "Smolensk",
                         State = "GW"
                     }
                  },
@@ -103,7 +103,7 @@ namespace AllForRent.Data
                         Address = new Address()
                         {
                             Street = "123 Main St",
-                            City = "Charlotte",
+                            City = "Smolensk",
                             State = "NC"
                         }
                     };

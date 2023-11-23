@@ -158,6 +158,10 @@ namespace AllForRent.Migrations
                     b.Property<int>("RentTime")
                         .HasColumnType("int");
 
+                    b.Property<string>("SaleDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
@@ -178,6 +182,7 @@ namespace AllForRent.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Fifth")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("First")
@@ -185,12 +190,15 @@ namespace AllForRent.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Fourth")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Second")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Third")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
